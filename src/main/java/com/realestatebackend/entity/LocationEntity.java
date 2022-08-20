@@ -18,6 +18,7 @@ public class LocationEntity {
         this.province = model.getProvince();
         this.district = model.getDistrict();
         this.ward = model.getWard();
+        this.status = model.getStatus();
     }
 
     @Id

@@ -17,6 +17,7 @@ public class LocationModel {
         this.province = entity.getProvince();
         this.district = entity.getDistrict();
         this.ward = entity.getWard();
+        this.status = entity.getStatus();
     }
 
     private Integer id;

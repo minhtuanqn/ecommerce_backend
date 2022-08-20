@@ -1,10 +1,14 @@
 package com.realestatebackend.service;
 
+import com.realestatebackend.constant.EntityStatusEnum.*;
 import com.realestatebackend.customexception.DuplicatedEntityException;
+import com.realestatebackend.customexception.NoSuchEntityException;
 import com.realestatebackend.entity.LocationEntity;
 import com.realestatebackend.model.LocationModel;
 import com.realestatebackend.repository.LocationRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class LocationService {
@@ -21,8 +25,7 @@ public class LocationService {
      * @param model
      * @return created model
      */
-    public LocationModel createLocation(LocationModel model)
-    {
+    public LocationModel createLocation(LocationModel model) {
         //Check existed location
         if(locationRepository.existsLocationEntitiesByProvinceAndAndDistrictAndWard(model.getProvince(), model.getDistrict(), model.getWard())) {
             throw new DuplicatedEntityException("This location has been existed");
@@ -34,6 +37,7 @@ public class LocationService {
 
         //Prepare entity
         LocationEntity entity = new LocationEntity(model);
+        entity.setStatus(LocationStatusEnum.ACTIVE.ordinal());
 
         //Save entity to DB
         LocationEntity savedEntity = locationRepository.save(entity);
@@ -41,4 +45,23 @@ public class LocationService {
 
         return model;
     }
+
+    /**
+     * delete a location
+     * @param id
+     * @return delete model
+     */
+    public LocationModel deleteLocationModel(Integer id) {
+        //Find location with id
+        Optional<LocationEntity> deletedLocationOptional = locationRepository.findById(id);
+        LocationEntity deletedLocationEntity = deletedLocationOptional.orElseThrow(() -> new NoSuchEntityException("Not found location"));
+
+        //Set status for entity
+        deletedLocationEntity.setStatus(LocationStatusEnum.DISABLE.ordinal());
+
+        //Update status of location
+        LocationEntity responseEntity = locationRepository.save(deletedLocationEntity);
+        return new LocationModel(responseEntity);
+    }
+
 }
