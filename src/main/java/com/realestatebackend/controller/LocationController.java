@@ -43,4 +43,16 @@ public class LocationController {
         LocationModel deletedModel = locationService.deleteLocationModel(id);
         return new ResponseEntity<>(deletedModel, HttpStatus.OK);
     }
+
+    /**
+     * Find location by id
+     * @param id
+     * @return response entity contains model
+     */
+    @GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<LocationModel> findLocationById(@PathVariable @Min(0) Integer id) {
+        LocationModel model = locationService.findLocationById(id);
+        return new ResponseEntity<>(model, HttpStatus.OK);
+    }
+
 }

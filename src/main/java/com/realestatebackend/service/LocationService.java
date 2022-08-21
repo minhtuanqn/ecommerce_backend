@@ -64,4 +64,16 @@ public class LocationService {
         return new LocationModel(responseEntity);
     }
 
+    /**
+     * Find a location by id
+     * @param id
+     * @return
+     */
+    public LocationModel findLocationById(Integer id) {
+        //Find location with id
+        Optional<LocationEntity> searchedLocationOptional = locationRepository.findById(id);
+        LocationEntity locationEntity = searchedLocationOptional.orElseThrow(() -> new NoSuchEntityException("Not found location"));
+        return new LocationModel(locationEntity);
+    }
+
 }
