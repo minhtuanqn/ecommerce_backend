@@ -27,7 +27,7 @@ public class LocationService {
      */
     public LocationModel createLocation(LocationModel model) {
         //Check existed location
-        if(locationRepository.existsLocationEntitiesByProvinceAndAndDistrictAndWard(model.getProvince(), model.getDistrict(), model.getWard())) {
+        if(locationRepository.existsLocationEntitiesByProvinceAndDistrictAndWard(model.getProvince(), model.getDistrict(), model.getWard())) {
             throw new DuplicatedEntityException("This location has been existed");
         }
         //Set id for model is null
@@ -67,13 +67,38 @@ public class LocationService {
     /**
      * Find a location by id
      * @param id
-     * @return
+     * @return found model
      */
     public LocationModel findLocationById(Integer id) {
         //Find location with id
         Optional<LocationEntity> searchedLocationOptional = locationRepository.findById(id);
         LocationEntity locationEntity = searchedLocationOptional.orElseThrow(() -> new NoSuchEntityException("Not found location"));
         return new LocationModel(locationEntity);
+    }
+
+    /**
+     * Update location
+     * @param id
+     * @param locationModel
+     * @return updated loation
+     */
+    public LocationModel updateLocation(Integer id, LocationModel locationModel) {
+        //Find location with id
+        Optional<LocationEntity> searchedLocationOptional = locationRepository.findById(id);
+        LocationEntity searchedLocationEntity = searchedLocationOptional.orElseThrow(() -> new NoSuchEntityException("Not found location"));
+
+        //Check existed location with province, district and ward then update model
+        if(locationRepository.existsLocationEntitiesByProvinceAndDistrictAndWardAndIdNot(locationModel.getProvince(),
+                locationModel.getDistrict(), locationModel.getWard(), id)) {
+            throw  new DuplicatedEntityException("This location existed");
+        }
+
+        //Prepare entity for saving to DB
+        locationModel.setId(id);
+
+        //Save entity to DB
+        LocationEntity savedEntity = locationRepository.save(new LocationEntity(locationModel));
+        return new LocationModel(savedEntity);
     }
 
 }

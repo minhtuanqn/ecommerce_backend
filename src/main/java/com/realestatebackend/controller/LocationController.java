@@ -55,4 +55,16 @@ public class LocationController {
         return new ResponseEntity<>(model, HttpStatus.OK);
     }
 
+    /**
+     * Update location
+     * @param id
+     * @param requestModel
+     * @return response entity contains model
+     */
+    @PutMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<LocationModel> updateLocation(@PathVariable @Min(0) Integer id,
+                                                        @Valid @RequestBody LocationModel requestModel) {
+        LocationModel updatedModel = locationService.updateLocation(id, requestModel);
+        return new ResponseEntity<>(updatedModel, HttpStatus.OK);
+    }
 }

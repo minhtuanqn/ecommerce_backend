@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
 public interface LocationRepository extends CrudRepository<LocationEntity, Integer>, JpaSpecificationExecutor<LocationEntity> {
-    boolean existsLocationEntitiesByProvinceAndAndDistrictAndWard(String province, String district, String ward);
+    boolean existsLocationEntitiesByProvinceAndDistrictAndWard(String province, String district, String ward);
+    boolean existsLocationEntitiesByProvinceAndDistrictAndWardAndIdNot(String province, String district, String ward, Integer id);
 }
