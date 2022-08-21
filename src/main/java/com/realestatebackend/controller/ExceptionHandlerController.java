@@ -1,5 +1,6 @@
 package com.realestatebackend.controller;
 
+import com.realestatebackend.customexception.ClassCustomException;
 import com.realestatebackend.customexception.SQLCustomException;
 import com.realestatebackend.model.APIErrorModel;
 import org.springframework.beans.TypeMismatchException;
@@ -203,6 +204,20 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
             SQLCustomException ex) {
         initMap();
         invalidMap.put("Data exception", ex.getMessage());
+        APIErrorModel apiErrorModel = new APIErrorModel(LocalDateTime.now(), HttpStatus.BAD_REQUEST.name(), invalidMap);
+        return new ResponseEntity<>(apiErrorModel, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle exist unique identity exception
+     * @param ex
+     * @return response entity
+     */
+    @ExceptionHandler({ClassCustomException.class})
+    public ResponseEntity<Object> handleClassCustomException(
+            ClassCustomException ex) {
+        initMap();
+        invalidMap.put("Class exception", ex.getMessage());
         APIErrorModel apiErrorModel = new APIErrorModel(LocalDateTime.now(), HttpStatus.BAD_REQUEST.name(), invalidMap);
         return new ResponseEntity<>(apiErrorModel, HttpStatus.BAD_REQUEST);
     }

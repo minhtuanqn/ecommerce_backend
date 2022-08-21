@@ -1,6 +1,9 @@
 package com.realestatebackend.controller;
 
 import com.realestatebackend.model.LocationModel;
+import com.realestatebackend.model.PaginationRequestModel;
+import com.realestatebackend.model.ResourceModel;
+import com.realestatebackend.resolver.annotation.RequestPagingParam;
 import com.realestatebackend.service.LocationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -66,5 +69,18 @@ public class LocationController {
                                                         @Valid @RequestBody LocationModel requestModel) {
         LocationModel updatedModel = locationService.updateLocation(id, requestModel);
         return new ResponseEntity<>(updatedModel, HttpStatus.OK);
+    }
+
+    /**
+     * Search location by province or district or ward
+     * @param searchedValue
+     * @param paginationRequestModel
+     * @return resource data of location
+     */
+    @GetMapping(path = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Object> searchLocations(@RequestParam(value = "searchedValue", defaultValue = "") String searchedValue,
+                                                  @RequestPagingParam PaginationRequestModel paginationRequestModel) {
+        ResourceModel<LocationModel> locationList = locationService.searchLocations(searchedValue, paginationRequestModel);
+        return new ResponseEntity<>(locationList, HttpStatus.OK);
     }
 }

@@ -1,13 +1,21 @@
 package com.realestatebackend.service;
 
 import com.realestatebackend.constant.EntityStatusEnum.*;
+import com.realestatebackend.convertor.PaginationConvertor;
 import com.realestatebackend.customexception.DuplicatedEntityException;
 import com.realestatebackend.customexception.NoSuchEntityException;
 import com.realestatebackend.entity.LocationEntity;
+import com.realestatebackend.metamodel.LocationEntity_;
 import com.realestatebackend.model.LocationModel;
+import com.realestatebackend.model.PaginationRequestModel;
+import com.realestatebackend.model.ResourceModel;
 import com.realestatebackend.repository.LocationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -99,6 +107,72 @@ public class LocationService {
         //Save entity to DB
         LocationEntity savedEntity = locationRepository.save(new LocationEntity(locationModel));
         return new LocationModel(savedEntity);
+    }
+
+    /**
+     * Specification for search province
+     * @param searchedValue
+     * @return specification
+     */
+    private Specification<LocationEntity> containProvince(String searchedValue) {
+        return ((root, query, criteriaBuilder) -> {
+            String pattern = "%" + searchedValue + "%";
+            return criteriaBuilder.like(root.get(LocationEntity_.PROVINCE), pattern);
+        });
+    }
+
+    /**
+     * Specification for search district
+     * @param searchedValue
+     * @return specification
+     */
+    private Specification<LocationEntity> containDistrict(String searchedValue) {
+        return ((root, query, criteriaBuilder) -> {
+            String pattern = "%" + searchedValue + "%";
+            return criteriaBuilder.like(root.get(LocationEntity_.DISTRICT), pattern);
+        });
+    }
+
+    /**
+     * Specification for search ward
+     * @param searchedValue
+     * @return specification
+     */
+    private Specification<LocationEntity> containWard(String searchedValue) {
+        return ((root, query, criteriaBuilder) -> {
+            String pattern = "%" + searchedValue + "%";
+            return criteriaBuilder.like(root.get(LocationEntity_.WARD), pattern);
+        });
+    }
+
+    /**
+     * search location like province or district or ward
+     * @param searchedValue
+     * @param paginationRequestModel
+     * @return resource of data
+     */
+    public ResourceModel<LocationModel> searchLocations(String searchedValue, PaginationRequestModel paginationRequestModel) {
+        PaginationConvertor<LocationModel, LocationEntity> paginationConvertor = new PaginationConvertor<>();
+
+        String defaultSortBy = LocationEntity_.PROVINCE;
+        Pageable pageable = paginationConvertor.convertToPageable(paginationRequestModel, defaultSortBy, LocationEntity.class);
+
+        //Find all location
+        Page<LocationEntity> locationEntityPage = locationRepository.findAll(containProvince(searchedValue)
+                .or(containDistrict(searchedValue))
+                .or(containWard(searchedValue)), pageable);
+
+        //Convert list of location to location model
+        List<LocationModel> locationModels = new ArrayList<>();
+        for (LocationEntity entity : locationEntityPage) {
+            locationModels.add(new LocationModel(entity));
+        }
+
+        //Prepare resource for return
+        ResourceModel<LocationModel> resource = new ResourceModel<>();
+        resource.setData(locationModels);
+        paginationConvertor.buildPagination(paginationRequestModel, locationEntityPage, resource);
+        return resource;
     }
 
 }

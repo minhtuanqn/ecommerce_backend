@@ -8,6 +8,9 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * Model for handle error api
+ */
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class APIErrorModel {
 
