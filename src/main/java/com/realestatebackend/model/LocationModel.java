@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Component;
 import javax.validation.constraints.NotNull;
 
@@ -22,15 +23,18 @@ public class LocationModel {
 
     private Integer id;
 
-    @NotNull(message = "province.null")
+    @NotNull(message = "{province.null}")
+    @Length(min = 1, max = 50, message = "{province.length}")
     private String province;
 
-    @NotNull(message = "district.null")
+    @NotNull(message = "{district.null}")
+    @Length(min = 1, max = 50, message = "{district.length}")
     private String district;
 
-    @NotNull(message = "ward.null")
+    @NotNull(message = "{ward.null}")
+    @Length(min = 1, max = 50, message = "{ward.length}")
     private String ward;
 
-    @NotNull(message = "location_status.null")
+    @NotNull(message = "{location_status.null}")
     private int status;
 }
